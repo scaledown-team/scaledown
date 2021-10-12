@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="scaledown",
-    version="0.0.1",
+    version="0.0.2",
     author="csoham",
     author_email="hello@csoham.com",
     description="Scaledown is an Open Source Neural Network Optimization Framework for TinyML Devices",
@@ -15,6 +15,6 @@ setuptools.setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=['test*']),
     python_requires=">=3.6",
 )

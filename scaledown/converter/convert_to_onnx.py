@@ -1,9 +1,4 @@
 import subprocess
-try:
-    import onnx
-except ImportError:
-    raise ImportError(f"You need to install ONNX and ONNX_TF to convert a model to \
-            TensorFlow/Keras format")
 
 class ConvertToOnnx():
     def __init__(self, model_name=False):
@@ -21,6 +16,12 @@ class ConvertToOnnx():
         input_shape=list(model.parameters())[0].shape
 
     def convert(self, model, opset=14):
+        try:
+            import onnx
+        except ImportError:
+            raise ImportError(f"You need to install ONNX and ONNX_TF to convert a model to \
+                    TensorFlow/Keras format")
+
         if not model.type in self.supported_models:
             raise ValueError("Model type does not support conversion to ONNX")
 

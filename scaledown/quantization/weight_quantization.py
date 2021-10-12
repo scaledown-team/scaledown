@@ -1,8 +1,10 @@
 from .quantization import Quantization
+import os
+import pathlib
 
 class WeightQuantization(Quantization):
     def __init__(self, level='float16'):
-        if level not in ['float16', 'int8']:
+        if level not in ['float16', 'int8', 'hybrid']:
             raise ValueError(f"level value of {level} not supported. Please choose between int8 \
                     or float16 quantization")
         self.level=level
@@ -37,3 +39,11 @@ class WeightQuantization(Quantization):
 
     def get_model(self):
         return self.quantized_model
+
+    def save_model(self, file_name='quant_model.tflite'):
+        if not file_name.endswith('.tflite'):
+            file_name+='.tflite'
+        file_name= pathlib.Path(file_name)
+        file_name.mkdir(exist_ok=True, parents=True)
+        file_name.write_bytes(self.get_model())
+

@@ -1,5 +1,5 @@
 from .convert_to_onnx import ConvertToOnnx
-from .convert_to_tf improt ConvertToTF
+from .convert_to_tf import ConvertToTF
 
 __all__ = [
         'ConvertToOnnx',
