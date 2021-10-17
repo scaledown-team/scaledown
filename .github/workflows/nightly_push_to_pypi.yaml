@@ -1,8 +1,8 @@
-name: Upload Python Package
+name: Update Nightly Python Package
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "45 23 * * *"
 
 jobs:
   push-pypi:
@@ -49,4 +49,4 @@ jobs:
       if: steps.commitswithintime.outputs.has-new-commits-within-time
       uses: pypa/gh-action-pypi-publish@master
       with:
-        password: ${{ secrets.TEST_PYPI_API }}
+        password: ${{ secrets.PYPI_API }}
