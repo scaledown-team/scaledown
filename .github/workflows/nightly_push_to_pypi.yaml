@@ -2,7 +2,7 @@ name: Update Nightly Python Package
 
 on:
   schedule:
-    - cron: "* * * * *"
+    - cron: "*/5 * * * *"
 
 jobs:
   push-pypi:
