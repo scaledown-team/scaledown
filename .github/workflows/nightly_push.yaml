@@ -1,8 +1,9 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - nightly-test
 
 jobs:
   push-pypi:
@@ -10,6 +11,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
@@ -20,10 +22,14 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install setuptools wheel twine build
 
+    - name: Setup Nightly Build
+      run: python .github/prepare_nightly.py
+
     - name: Build a binary wheel and a source tarball
       run: python -m build --sdist --wheel --outdir dist/ .
 
-    - name: Publish distribution to PyPI
+    - name: Publish distribution to Test PyPI
       uses: pypa/gh-action-pypi-publish@master
       with:
-        password: ${{ secrets.PYPI_API }}
+        password: ${{ secrets.TEST_PYPI_API }}
+        repository_url: https://test.pypi.org/legacy/
