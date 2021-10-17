@@ -1,8 +1,9 @@
 import setuptools
+import scaledown
 
 setuptools.setup(
     name="scaledown",
-    version="0.0.3",
+    version=scaledown.__version__,
     author="csoham",
     author_email="hello@csoham.com",
     description="Scaledown is an Open Source Neural Network Optimization Framework for TinyML Devices",
