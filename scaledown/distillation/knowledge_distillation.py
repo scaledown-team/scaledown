@@ -1,3 +1,6 @@
+'''
+Performs vanilla Knowledge Distillation
+'''
 
 class KnowledgeDistillation():
     def __init__(self, teacher, student, optimizer, distillation_loss,
@@ -23,27 +26,37 @@ class KnowledgeDistillation():
             import torch
             import numpy as np
             import torch.nn.functional as F
-        except Exception as e:
-            raise ImportError("Cannot import torch and numpy packages: {e}")
+        except ImportError as e:
+            raise ImportError(f"Cannot import packages {e}")
 
         if not self.activation:
             self.activation=F.log_softmax
 
         self.teacher=self.teacher.eval()
-        train_loss=0
-        prev=teacher_model.fc2.weight
         teacher_preds=self.teacher(x)
 
         self.optimizer.zero_grad()
         student_preds = self.student(x)
         output=self.activation(output, dim=1)
-        loss = self.distillation_loss(input=output, target=target,
+        student_loss = self.distillation_loss(input=output, target=y,
                 log_target=True, reduction='batchmean')
-        train_loss+=loss
+        distillation_loss=self.distillation_loss(input=output, target=teacher_preds)
         loss.backward()
         self.optimizer.step()
 
+        results_dict={'student_loss': student_loss, 'distillation_loss': distillation_loss}
+        
+        return results_dict
+
     def _tensorflow_distiller(self, x, y):
+        try:
+            import tensorflow as tf
+            from tensorflow import keras
+            from tensorflow.keras import layers
+            import numpy as np
+        except ImportError as e:
+            raise ImportError(f"Cannot import packages {e}")
+
         if not self.activation:
             self.activation=tf.nn.softmax
         teacher_preds=self.teacher(x, training=False)
@@ -60,12 +73,21 @@ class KnowledgeDistillation():
 
         self.optimizer.apply_gradients(zip(gradients, trainable_vars))
 
+        results_dict={'student_loss': student_loss, 'distillation_loss': distillation_loss}
+        
+        return results_dict
+
     def train_step(self, data):
         x, y = data
         if self.framework=='tensorflow':
-            self._tensorflow_distiller(x, y)
+            loss=self._tensorflow_distiller(x, y)
         elif self.framework=='pytorch':
-            self._pytorch_distiller(x, y)
+            loss=self._pytorch_distiller(x, y)
+
+        return loss
 
     def test(self, data):
+        '''
+        TODO: API to test student model
+        '''
         pass
