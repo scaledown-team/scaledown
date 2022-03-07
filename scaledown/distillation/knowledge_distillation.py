@@ -49,6 +49,9 @@ class KnowledgeDistillation():
         return results_dict
 
     def _tensorflow_distiller(self, x, y):
+        '''
+        Trains student model for a single iteration on x and y
+        '''
         try:
             import tensorflow as tf
             from tensorflow import keras
