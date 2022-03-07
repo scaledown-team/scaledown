@@ -32,21 +32,21 @@ jobs:
         echo "The 'total-commits' value is ${{ steps.commitswithintime.outputs.total-commits }}"
 
     - name: Install dependencies
-      if: steps.commitswithintime.outputs.has-new-commits-within-time
+      if: ${{ steps.commitswithintime.outputs.has-new-commits-within-time }}
       run: |
         python -m pip install --upgrade pip
         python -m pip install setuptools wheel twine build
 
     - name: Setup Nightly Build
-      if: steps.commitswithintime.outputs.has-new-commits-within-time
+      if: ${{ steps.commitswithintime.outputs.has-new-commits-within-time }}
       run: python .github/prepare_nightly.py
 
     - name: Build a binary wheel and a source tarball
-      if: steps.commitswithintime.outputs.has-new-commits-within-time
+      if: ${{ steps.commitswithintime.outputs.has-new-commits-within-time }}
       run: python -m build --sdist --wheel --outdir dist/ .
 
     - name: Publish distribution to PyPI
-      if: steps.commitswithintime.outputs.has-new-commits-within-time
+      if: ${{ steps.commitswithintime.outputs.has-new-commits-within-time }}
       uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.PYPI_API }}
