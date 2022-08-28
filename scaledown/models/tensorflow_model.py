@@ -15,7 +15,7 @@ class TensorflowModel():
     def _is_tf_model(self, model):
         #TODO: Include keras.Model
         model_classes = [tf.keras.Model, tf.estimator.Estimator]
-        return isinstance(model, model_clases)
+        return isinstance(model, model_classes)
 
     def get_model(self):
         return self.model
