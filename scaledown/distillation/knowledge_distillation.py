@@ -6,8 +6,8 @@ class KnowledgeDistillation():
     def __init__(self, teacher, student, optimizer, distillation_loss,
             student_loss, temperature=1, alpha=0.3, metric=None,
             activation=None):
-        self.teacher=teacher
-        self.student=student
+        self.teacher=teacher.model
+        self.student=student.model
         self._verify_models()
 
         self.framework=self.teacher._type
