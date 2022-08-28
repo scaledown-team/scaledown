@@ -5,8 +5,17 @@ except ImportError as e:
 
 class TensorflowModel():
     def __init__(self, model):
-        self.model=model
+        if self._is_tf_model(model):
+            self.model=model
+        else:
+            self.model=tf.keras.models.load_model(model)
+
         self._type="tensorflow"
+
+    def _is_tf_model(self, model):
+        #TODO: Include keras.Model
+        model_classes = [tf.keras.Model, tf.estimator.Estimator]
+        return isinstance(model, model_clases)
 
     def get_model(self):
         return self.model

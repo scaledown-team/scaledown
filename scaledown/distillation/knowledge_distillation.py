@@ -4,7 +4,7 @@ Performs vanilla Knowledge Distillation
 
 class KnowledgeDistillation():
     def __init__(self, teacher, student, optimizer, distillation_loss,
-            student_loss, temperature=1, metric=None,
+            student_loss, temperature=1, alpha=0.3, metric=None,
             activation=None):
         self.teacher=teacher
         self.student=student
@@ -16,6 +16,7 @@ class KnowledgeDistillation():
         self.distillation_loss=distillation_loss
         self.student_loss=student_loss
         self.temperature=temperature
+        self.activation=activation
 
     def _verify_models(self):
         if not self.teacher._type==self.student._type:
@@ -62,6 +63,7 @@ class KnowledgeDistillation():
 
         if not self.activation:
             self.activation=tf.nn.softmax
+
         teacher_preds=self.teacher(x, training=False)
 
         with tf.GradientTape as tape:
@@ -71,12 +73,14 @@ class KnowledgeDistillation():
                     self.activation(teacher_preds/self.temperature, axis=1),
                     self.activation(student_preds/self.temperature, axis=1)
                     )
+            loss = self.alpha * student_loss + (1 - self.alpha) * distillation_loss
+
         trainable_vars=self.student.trainable_vars
-        gradients=tape.gradient(distillation_loss, trainable_vars)
+        gradients=tape.gradient(loss, trainable_vars)
 
         self.optimizer.apply_gradients(zip(gradients, trainable_vars))
 
-        results_dict={'student_loss': student_loss, 'distillation_loss': distillation_loss}
+        results_dict={'student_loss': student_loss, 'distillation_loss': distillation_loss, 'loss':loss}
         
         return results_dict
 
