@@ -1,4 +1,4 @@
-from knowldge_distillation import KnowledgeDistillation
+from scaledown.distillation.knowledge_distillation import KnowledgeDistillation
 
 __all__=[
         'KnowledgeDistillation'
