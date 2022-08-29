@@ -6,20 +6,20 @@ class KnowledgeDistillation():
     def __init__(self, teacher, student, optimizer, distillation_loss,
             student_loss, temperature=1, alpha=0.3, metric=None,
             activation=None):
+        self._verify_models(teacher, student)
+        self.framework=teacher._type
         self.teacher=teacher.model
         self.student=student.model
-        self._verify_models()
-
-        self.framework=self.teacher._type
         self.optimizer=optimizer
         self.metric=metric
+        self.alpha=alpha
         self.distillation_loss=distillation_loss
         self.student_loss=student_loss
         self.temperature=temperature
         self.activation=activation
 
-    def _verify_models(self):
-        if not self.teacher._type==self.student._type:
+    def _verify_models(self, teacher, student):
+        if not teacher._type==student._type:
             raise ValueError("Teacher model and student model should use the same model type")
 
     def _pytorch_distiller(self, x, y):
@@ -66,7 +66,7 @@ class KnowledgeDistillation():
 
         teacher_preds=self.teacher(x, training=False)
 
-        with tf.GradientTape as tape:
+        with tf.GradientTape() as tape:
             student_preds=self.student(x, training=True)
             student_loss=self.student_loss(y, student_preds)
             distillation_loss=self.distillation_loss(
@@ -75,7 +75,7 @@ class KnowledgeDistillation():
                     )
             loss = self.alpha * student_loss + (1 - self.alpha) * distillation_loss
 
-        trainable_vars=self.student.trainable_vars
+        trainable_vars=self.student.trainable_variables
         gradients=tape.gradient(loss, trainable_vars)
 
         self.optimizer.apply_gradients(zip(gradients, trainable_vars))
@@ -98,3 +98,4 @@ class KnowledgeDistillation():
         TODO: API to test student model
         '''
         pass
+
