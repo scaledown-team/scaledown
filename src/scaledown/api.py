@@ -2,18 +2,23 @@ from typing import Dict, List, Optional, Union, Any
 import json
 
 from .templates import Template, TemplateManager, get_default_manager as get_default_template_manager
-from .styles import Style, StyleManager, get_default_style_manager
+from .styles import (
+    Style, StyleManager, get_default_style_manager, get_enhanced_style_manager,
+    OptimizationStyle, get_optimization_style_by_optimizers
+)
 
 class ScaleDown:
     """Main interface for the ScaleDown package."""
     
-    def __init__(self):
+    def __init__(self, enable_optimization_styles: bool = True):
         """Initialize ScaleDown with default managers."""
         self.template_manager = get_default_template_manager()
-        self.style_manager = get_default_style_manager()
+        self.style_manager = get_enhanced_style_manager() if enable_optimization_styles else get_default_style_manager()
         self.current_template = None
         self.current_style = None
+        self.current_model = None
         self.template_values = {}
+        self.optimization_enabled = enable_optimization_styles
     
     def load(self, item_type: str) -> List[Dict[str, str]]:
         """Load templates, styles, or models.
@@ -128,3 +133,123 @@ class ScaleDown:
             "saved_percentage": saved_percentage,
             "model": "mock-model"
         }
+
+    def select_model(self, model_name: str, temperature: float = 0.0,
+                    configuration: Optional[Dict[str, str]] = None) -> None:
+        """Select and configure an LLM model.
+
+        Args:
+            model_name: Name/identifier of the model
+            temperature: Temperature setting
+            configuration: Configuration dict for API keys etc.
+        """
+        try:
+            from .models.llm_model import LLMModelFactory
+            self.current_model = LLMModelFactory.create_model(
+                model_name=model_name,
+                temperature=temperature,
+                configuration=configuration
+            )
+        except ImportError:
+            # Fallback if LLM integration not available
+            self.current_model = None
+
+    def optimize_with_pipeline(self, question: str, optimizers: List[str]) -> Dict[str, Any]:
+        """Optimize question using the modular optimization pipeline.
+
+        Args:
+            question: The question or prompt to optimize
+            optimizers: List of optimizer names to apply
+
+        Returns:
+            Dictionary with optimization results
+        """
+        if self.current_template:
+            # Use template system if template is selected
+            prompt = self.get_prompt()
+        else:
+            # Direct optimization
+            prompt = question
+
+        try:
+            from .optimization.prompt_optimizers import get_optimizer_registry
+            registry = get_optimizer_registry()
+            optimized_prompt = registry.apply_optimizers(prompt, optimizers)
+            report = registry.get_optimization_report(prompt, optimized_prompt, optimizers)
+
+            return report
+        except ImportError:
+            # Fallback
+            return {
+                "original_prompt": prompt,
+                "optimized_prompt": prompt,
+                "optimizers_applied": optimizers,
+                "optimization_count": 0
+            }
+
+    def optimize_and_call_llm(self, question: str, optimizers: List[str],
+                             max_tokens: int = 1000) -> Dict[str, Any]:
+        """Optimize prompt and call LLM in one step.
+
+        Args:
+            question: The question or prompt
+            optimizers: List of optimizer names to apply
+            max_tokens: Maximum tokens for response
+
+        Returns:
+            Dictionary with optimization info and LLM response
+        """
+        if not self.current_model:
+            raise ValueError("No model selected. Call select_model() first.")
+
+        if self.current_template:
+            prompt = self.get_prompt()
+        else:
+            prompt = question
+
+        return self.current_model.optimize_and_call(prompt, optimizers, max_tokens)
+
+    def select_optimization_style(self, optimizers: List[str]) -> Optional[OptimizationStyle]:
+        """Select an optimization style based on optimizer list.
+
+        Args:
+            optimizers: List of optimizer names
+
+        Returns:
+            OptimizationStyle if found/created, None otherwise
+        """
+        style = get_optimization_style_by_optimizers(optimizers)
+        if style:
+            self.current_style = style
+        return style
+
+    def list_optimizers(self) -> List[Dict[str, str]]:
+        """List available prompt optimizers.
+
+        Returns:
+            List of optimizer information
+        """
+        try:
+            from .optimization.prompt_optimizers import get_optimizer_registry
+            registry = get_optimizer_registry()
+            optimizers = []
+            for name in registry.list_optimizers():
+                info = registry.get_optimizer_info(name)
+                if info:
+                    optimizers.append(info)
+            return optimizers
+        except ImportError:
+            return []
+
+    def get_optimization_styles(self) -> List[Dict[str, Any]]:
+        """Get available optimization styles.
+
+        Returns:
+            List of optimization style information
+        """
+        try:
+            from .styles.optimization_style import create_default_optimization_styles
+            styles = create_default_optimization_styles()
+            return [style.to_dict() for style in styles]
+        except ImportError:
+            return []

@@ -81,3 +81,48 @@ class BaseModel(ABC):
             "percentage": (count / limit) * 100 if limit > 0 else 0,
             "remaining": limit - count
         }
+
+    def optimize_prompt_with_pipeline(self, prompt: str, optimizers: List[str]) -> str:
+        """Optimize prompt using the modular optimization pipeline.
+
+        Args:
+            prompt: The original prompt
+            optimizers: List of optimizer names to apply
+
+        Returns:
+            The optimized prompt with optimizers applied
+        """
+        try:
+            from ..optimization.prompt_optimizers import get_optimizer_registry
+            registry = get_optimizer_registry()
+            return registry.apply_optimizers(prompt, optimizers)
+        except ImportError:
+            # Fallback to basic optimization if pipeline not available
+            return self.optimize_prompt(prompt)
+
+    def get_optimization_report(self, original_prompt: str, optimizer_names: List[str]) -> Dict[str, Any]:
+        """Generate optimization report using the pipeline.
+
+        Args:
+            original_prompt: The original prompt
+            optimizer_names: List of optimizer names applied
+
+        Returns:
+            Optimization report with metrics
+        """
+        optimized_prompt = self.optimize_prompt_with_pipeline(original_prompt, optimizer_names)
+
+        try:
+            from ..optimization.prompt_optimizers import get_optimizer_registry
+            registry = get_optimizer_registry()
+            return registry.get_optimization_report(original_prompt, optimized_prompt, optimizer_names)
+        except ImportError:
+            # Fallback report
+            return {
+                "original_prompt": original_prompt,
+                "optimized_prompt": optimized_prompt,
+                "optimizers_applied": optimizer_names,
+                "original_length": len(original_prompt),
+                "optimized_length": len(optimized_prompt),
+                "length_change": len(optimized_prompt) - len(original_prompt)
+            }

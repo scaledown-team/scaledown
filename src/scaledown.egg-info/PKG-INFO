@@ -1,0 +1,189 @@
+Metadata-Version: 2.4
+Name: scaledown
+Version: 0.2.0
+Summary: A Context Optimization Package
+Author-email: Soham Chatterjee <soham@scaldown.ai>
+License: MIT
+Project-URL: Homepage, https://scaledown.ai
+Project-URL: Issues, https://github.com/scaledown-team/scaledown
+Keywords: ai,llm,prompt,optimization,template,machine-learning
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests>=2.25.0
+Dynamic: license-file
+
+# ScaleDown v0.2.0 - Advanced AI Prompt Optimization Package
+
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-0.2.0-green.svg)](https://github.com/scaledown-team/scaledown)
+
+ScaleDown is a comprehensive Python package for creating, managing, and optimizing AI prompt templates with advanced modular optimization techniques. It integrates template management, style systems, and cutting-edge prompt optimization methods to reduce hallucinations and improve AI response quality.
+
+## 🚀 Key Features
+
+### **Modular Prompt Optimization**
+- **5 Advanced Optimizers**: Expert Persona, Chain-of-Thought, Uncertainty Quantification, Chain-of-Verification, and baseline
+- **8 Pre-built Optimization Styles**: Expert Thinking, Verified Expert, Careful Reasoning, and more
+- **Composable Pipeline**: Combine multiple optimizers in any sequence
+- **Hallucination Reduction**: Specialized techniques to minimize AI hallucinations
+
+### **Professional Template System**
+- **Template Management**: Create and manage reusable prompt templates
+- **Variable Substitution**: Dynamic placeholder replacement
+- **Category Organization**: Organize templates by domain and use case
+- **Template Optimization**: Apply optimizers to templates automatically
+
+### **Multi-LLM Integration**
+- **Universal LLM Support**: OpenAI GPT, Google Gemini, ScaleDown models
+- **Unified Interface**: Consistent API across all model providers
+- **Token Management**: Smart token counting and limit handling
+- **Model Optimization**: Model-specific prompt optimization
+
+### **Backward Compatibility**
+- **Legacy API Support**: Existing code continues to work unchanged
+- **Enhanced Features**: Opt-in advanced functionality
+- **Migration Path**: Seamless upgrade from basic to advanced usage
+
+## 📦 Installation
+
+```bash
+pip install scaledown
+```
+
+## 🎯 Quick Start
+
+### Basic Usage (Backward Compatible)
+```python
+from scaledown.tools import tools
+
+# Original API still works
+result = tools(llm='gemini-1.5-flash', optimiser='cot')
+llm_provider = result['llm_provider']
+optimizer = result['optimizer']
+```
+
+### Enhanced Usage with Optimization Pipeline
+```python
+from scaledown import ScaleDown
+
+# Initialize with optimization features
+sd = ScaleDown()
+
+# Select model and optimization style
+sd.select_model('scaledown-gpt-4o')
+
+# Optimize and call LLM in one step
+result = sd.optimize_and_call_llm(
+    question="Explain quantum computing principles",
+    optimizers=['expert_persona', 'cot', 'uncertainty'],
+    max_tokens=500
+)
+
+print(f"Optimized Response: {result['llm_response']}")
+print(f"Optimization Report: {result['optimization_metrics']}")
+```
+
+### Direct Optimization (Simple API)
+```python
+from scaledown import optimize_prompt, parse_optimizers
+
+# Parse optimizers
+optimizers = parse_optimizers('expert_persona,cot,uncertainty')
+
+# Optimize prompt
+question = "What are the implications of artificial general intelligence?"
+optimized_prompt = optimize_prompt(question, optimizers)
+
+print(f"Original: {question}")
+print(f"Optimized: {optimized_prompt}")
+```
+
+## 🧠 Available Optimizers
+
+| Optimizer | Description | Use Case |
+|-----------|-------------|----------|
+| `expert_persona` | Adds domain expertise context | Specialized knowledge tasks |
+| `cot` | Chain-of-Thought reasoning | Complex problem solving |
+| `uncertainty` | Confidence assessment | Critical decision making |
+| `cove` | Chain-of-Verification | Fact-checking and accuracy |
+| `none` | Baseline (no optimization) | Performance comparison |
+
+## 🎨 Pre-built Optimization Styles
+
+| Style | Optimizers | Best For |
+|-------|------------|----------|
+| Expert Thinking | `expert_persona + cot` | Research and analysis |
+| Verified Expert | `expert_persona + cove` | Fact-based responses |
+| Careful Reasoning | `cot + uncertainty` | Cautious decision making |
+| Comprehensive Analysis | `all optimizers` | Critical tasks |
+
+## 📁 Project Structure
+
+```
+src/scaledown/
+├── __init__.py                 # Main package exports with v0.2.0 features
+├── api.py                      # Enhanced ScaleDown class
+├── models/                     # LLM model implementations
+│   ├── base_model.py          # Enhanced base model with pipeline
+│   ├── llm_model.py           # LLM integration bridge
+│   └── ...
+├── optimization/               # Modular optimization system
+│   ├── prompt_optimizers.py   # Core optimization classes
+│   ├── semantic_optimizer.py  # Semantic optimization
+│   └── ...
+├── styles/                     # Enhanced style management
+│   ├── optimization_style.py  # Optimization styles
+│   └── ...
+├── templates/                  # Template system
+├── tools/                      # Enhanced tools with backward compatibility
+└── utils/                      # Utility functions
+```
+
+## 🔄 Migration from v0.1.x
+
+Your existing code continues to work unchanged:
+
+```python
+# This still works exactly the same
+from scaledown.tools import tools
+result = tools(llm='gemini-1.5-flash', optimiser='cot')
+```
+
+To use enhanced features:
+
+```python
+# Enable enhanced features gradually
+result = tools(llm='gpt-4', optimiser='cot', enable_enhanced_features=True)
+scaledown_instance = result['scaledown']
+```
+
+## 🧪 Testing
+
+```bash
+python -m pytest tests/
+```
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) file for details.
+
+## 🎯 What's New in v0.2.0
+
+- ✅ **Modular Optimization Pipeline** - 5 advanced prompt optimizers
+- ✅ **Optimization Styles** - 8 pre-built optimization combinations
+- ✅ **Enhanced LLM Integration** - Unified interface with optimization
+- ✅ **Professional Architecture** - Clean abstractions and extensible design
+- ✅ **100% Backward Compatibility** - All existing code works unchanged
+
+---
+
+**ScaleDown v0.2.0** - Professional prompt optimization for every AI application. 🚀
