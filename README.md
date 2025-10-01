@@ -97,3 +97,33 @@ print(f"Optimized: {optimized_prompt}")
 | Careful Reasoning | `cot + uncertainty` | Cautious decision making |
 | Comprehensive Analysis | `all optimizers` | Critical tasks |
 
+
+## Submitting to PyPI
+Step 1:
+Make sure to update the version in `pyproject.toml` file
+
+Step 2:
+Build the package
+```
+python -m build
+```
+This should create a `dist` folder.
+
+If you haven't already, make sure you upgrade the `build` package
+```
+pip install --upgrade build
+```
+
+Step 3:
+Upload the package to PyPI:
+```
+python -m twine upload dist/*
+```
+
+You need to make sure you have `twine` installed and updated:
+```
+pip install --upgrade twine
+```
+
+Step 4:
+You will need an API key to upload to the official ScaleDown PyPI package. You can get this from @soham96
