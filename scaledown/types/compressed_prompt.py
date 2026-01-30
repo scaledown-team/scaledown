@@ -7,7 +7,7 @@ class CompressedPrompt:
     original_prompt: str
     tokens: Tuple[int, int]  # (original, compressed)
     latency: float
-    model: str
+    target_model: str
     
     @property
     def compression_ratio(self) -> float:

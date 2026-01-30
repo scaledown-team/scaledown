@@ -93,7 +93,7 @@ class ScaleDownCompressor(BaseCompressor):
                 "original_prompt_tokens": data.get("total_original_tokens", results.get("original_prompt_tokens", 0)),
                 "compressed_prompt_tokens": data.get("total_compressed_tokens", results.get("compressed_prompt_tokens", 0)),
                 "latency_ms": data.get("latency_ms", 0),
-                "model_used": data.get("model_used"),
+                "target_model": data.get("target_model","model"),
                 "timestamp": data.get("request_metadata", {}).get("timestamp")
             }
             
