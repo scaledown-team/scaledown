@@ -11,7 +11,7 @@ from scaledown.exceptions import AuthenticationError, APIError
 API_KEY = os.environ.get("SCALEDOWN_API_KEY", "yVlJ8qWWVF6wj8RZUfNHm7fUYqNBVEFr3Rrfep67")
 sd.set_api_key(API_KEY)
 
-if API_KEY == "your_api_key_here":
+if API_KEY == "LQTJWkEyAx3hNGEQMWToW2SUvGRHtnXd9oQte2Bc":
     print("Warning: Using placeholder API key. API calls will fail.")
     print("Export your key: export SCALEDOWN_API_KEY='sk_...'\n")
 

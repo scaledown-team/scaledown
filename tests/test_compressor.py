@@ -1,4 +1,4 @@
-import pytest
+import pytest 
 import os
 from unittest.mock import patch, MagicMock
 import scaledown as sd
@@ -10,9 +10,10 @@ def compressor():
 def test_missing_api_key(monkeypatch):
     """Test that initialization fails if no API key is found anywhere."""
     monkeypatch.delenv("SCALEDOWN_API_KEY", raising=False)
-    sd.set_api_key(None)
+    sd.set_api_key(None)  # Ensure no API key is set globally
     
-    comp = sd.ScaleDownCompressor(api_key=None)
+    # Don't pass api_key - should fail since no key is available
+    comp = sd.ScaleDownCompressor()
     
     with pytest.raises(sd.AuthenticationError):
         comp.compress("context", "prompt")
