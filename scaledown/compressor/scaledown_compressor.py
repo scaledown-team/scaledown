@@ -67,7 +67,7 @@ class ScaleDownCompressor(BaseCompressor):
                 "temperature": self.temperature,
                 "preserve_keywords": self.preserve_keywords,
                 "preserve_words": self.preserve_words,
-                "max_tokens": max_tokens,
+                "max_tokens": 226,
                 **kwargs
             }
         }
