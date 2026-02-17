@@ -1,7 +1,7 @@
 import os
 import tempfile
 import time
-import scaledown as sd
+import scaledown as sd 
 
 # Optional Optimizers (Lazy Loaded)
 from scaledown.optimizer import HasteOptimizer, SemanticOptimizer
